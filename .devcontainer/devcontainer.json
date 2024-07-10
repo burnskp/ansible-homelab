@@ -1,0 +1,33 @@
+{
+  "name": "Ansible Devcontainer",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      // Set the value to the version you wish to install or 'latest' to install the latest version.
+      "ANSIBLE_LINT_VERSION": "latest",
+      "ANSIBLE_NAVIGATOR_VERSION": "latest",
+      "ANSIBLE_VERSION": "latest",
+      "MOLECULE_VERSION": "latest",
+      "PRECOMMIT_VERSION": "latest",
+      "PYTEST_ANSIBLE_VERSION": "latest",
+      "YAMLLINT_VERSION": "latest"
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": "true",
+      "moby": "true"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["redhat.ansible"],
+      "settings": {
+        "ansible.executionEnvironment.containerEngine": "docker",
+        "ansible.executionEnvironment.pull.policy": "tag"
+      }
+    }
+  },
+  "postCreateCommand": "./.devcontainer/postCreateCommand.sh"
+}
