@@ -21,7 +21,7 @@ jobs:
         run: yamllint .
 
       - name: ansible-lint
-        uses: ansible/ansible-lint@v24.6.1
+        uses: ansible/ansible-lint@v24.7.0
 
       - name: markdownlint-cli2
         uses: DavidAnson/markdownlint-cli2-action@v16
