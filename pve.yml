@@ -1,0 +1,8 @@
+---
+- name: Install and Proxmox
+  hosts: pve
+  become: true
+  roles:
+    - ansible_user
+    - pve_updates
+    - pve_disable_nag

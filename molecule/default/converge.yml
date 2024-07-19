@@ -1,7 +1,0 @@
----
-- name: Coverage
-  hosts: molecule
-  tasks:
-    - name: Text example role
-      ansible.builtin.include_role:
-        name: ../../roles/example # noqa: role-name[path]

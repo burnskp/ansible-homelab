@@ -1,8 +1,7 @@
-# Contributing to [REPLACE WITH YOUR PROJECT NAME]
+# Contributing to ansible-homelab
 
-Thank you for your interest in contributing to our Ansible project! We welcome
-contributions from the community and appreciate your help in making our project
-better.
+This repo is designed to manage my homelab. You may contribute to it if you see
+any issues or improvements you feel I should make.
 
 ## Getting Started
 

@@ -1,0 +1,9 @@
+---
+- name: Copy no-nag-script to /etc/apt/apt.conf.d/
+  ansible.builtin.copy:
+    src: no-nag-script
+    dest: /etc/apt/apt.conf.d/no-nag-script
+    owner: root
+    group: root
+    mode: "0744"
+  notify: Reinstall proxmox-widget-toolkit

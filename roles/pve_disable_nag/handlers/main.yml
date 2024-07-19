@@ -1,0 +1,5 @@
+---
+# handlers file for ansible-role
+- name: Reinstall proxmox-widget-toolkit
+  ansible.builtin.command: apt --reinstall install -y proxmox-widget-toolkit
+  changed_when: true

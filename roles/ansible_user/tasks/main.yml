@@ -1,0 +1,30 @@
+---
+- name: Install sudo
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
+- name: Create ansible group
+  ansible.builtin.group:
+    name: ansible
+    state: present
+
+- name: Create ansible user
+  ansible.builtin.user:
+    name: ansible
+    group: ansible
+    createhome: true
+
+- name: Allow 'ansible' group to have passwordless sudo
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%ansible"
+    line: "%ansible ALL=(ALL) NOPASSWD: ALL"
+    validate: "visudo -cf %s"
+
+- name: Set authorized key taken from file
+  ansible.posix.authorized_key:
+    user: ansible
+    state: present
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHPjlOFf6IGqy1DVe3z1klX9Ed8v5kfFNSINcBF7pLAR ansible@burnskp.dev"

@@ -42,7 +42,7 @@ jobs:
         uses: checkmarx/kics-github-action@v2.1.1
         with:
           path: "roles,tasks"
-          fail_on: high,medium
+          fail_on: critical,high,medium
           output_path: results-dir
           platform_type: ansible
           output_formats: "json,sarif"

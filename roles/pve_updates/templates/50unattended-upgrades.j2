@@ -1,0 +1,21 @@
+{% set reboot_hour = ((ansible_default_ipv4.address.split('.')[-1]) | int) - 9 %}
+
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::AutocleanInterval "7";
+APT::Periodic::Unattended-Upgrade "7";
+
+Unattended-Upgrade::Origins-Pattern {
+    "origin=Debian,label=Debian-Security";
+    "origin=Debian,label=Debian";
+    "origin=Proxmox,label=Proxmox Debian Repository";
+    "origin=Proxmox,label=Proxmox Ceph 18 Reef Debian Repository";
+};
+
+Unattended-Upgrade::MinimalSteps "false";
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "{{ reboot_hour }}:00";
+
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
