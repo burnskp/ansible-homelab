@@ -41,7 +41,7 @@ jobs:
       - name: Run KICS Scan with SARIF result
         uses: checkmarx/kics-github-action@v2.1.1
         with:
-          path: "roles,tasks"
+          path: "roles"
           fail_on: critical,high,medium
           output_path: results-dir
           platform_type: ansible
