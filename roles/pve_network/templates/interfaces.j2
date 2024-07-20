@@ -10,8 +10,8 @@ iface enp87s0 inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-        address {{ net_primary['prefix'] }}.{{ ip_suffix }}/{{ net_primary['cidr'] }}
-        gateway {{ net_primary['prefix'] }}.1
+        address {{ net_external['prefix'] }}.{{ ip_suffix }}/{{ net_external['cidr'] }}
+        gateway {{ net_external['prefix'] }}.1
         bridge-ports enp87s0
         bridge-stp off
         bridge-fd 0
