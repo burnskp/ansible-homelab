@@ -1,0 +1,14 @@
+---
+- name: Install openvswitch-switch
+  ansible.builtin.package:
+    name: openvswitch-switch
+    state: present
+
+- name: Configure interfaces
+  ansible.builtin.template:
+    src: interfaces.j2
+    dest: /etc/network/interfaces
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart networking

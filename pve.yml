@@ -6,4 +6,5 @@
     - ansible_user
     - pve_updates
     - pve_disable_nag
+    - pve_network
     - pve_cluster
