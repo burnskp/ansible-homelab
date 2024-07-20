@@ -24,20 +24,6 @@ repos:
       - id: ansible-lint
         additional_dependencies:
           - ansible
-  - repo: https://github.com/Checkmarx/kics
-    rev: v2.1.0
-    hooks:
-      - id: kics-scan
-        args:
-          [
-            "--path",
-            roles,
-            tasks",
-            "--type",
-            "ansible",
-            "--fail-on",
-            "critical,high,medium",
-          ]
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.13.0
     hooks:
