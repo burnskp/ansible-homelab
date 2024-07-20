@@ -8,3 +8,4 @@
     - pve_disable_nag
     - pve_network
     - pve_cluster
+    - pve_ceph

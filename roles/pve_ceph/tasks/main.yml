@@ -1,0 +1,40 @@
+- name: Install ceph packages
+  ansible.builtin.apt:
+    name:
+      - ceph
+      - ceph-common
+      - ceph-fuse
+      - ceph-mds
+      - ceph-volume
+      - gdisk
+      - nvme-cli
+    install_recommends: false
+    dpkg_options: "force-confnew"
+    state: present
+  notify: Reload pvedaemon and pveproxy services
+
+- name: Initialize ceph
+  ansible.builtin.command: pveceph init -network 172.16.0.0/24
+  run_once: true
+  args:
+    creates: /etc/pve/ceph.conf
+
+- name: Check if mon is already enabled
+  ansible.builtin.lineinfile:
+    path: /etc/pve/ceph.conf
+    line: "[mon.{{ ansible_hostname }}]"
+    state: present
+  check_mode: true
+  register: mon_enabled
+
+- name: Enable mon
+  ansible.builtin.command: pveceph mon create
+  when: mon_enabled.changed
+  tags:
+    - skip_ansible_lint
+  changed_when: true
+
+- name: Setup mgr
+  ansible.builtin.command: pveceph mgr create
+  args:
+    creates: "/var/lib/ceph/mgr/ceph-{{ ansible_hostname }}"

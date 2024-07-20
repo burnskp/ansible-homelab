@@ -1,0 +1,12 @@
+---
+- name: Reload pvedaemon and pveproxy services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: reloaded
+  loop:
+    - pvedaemon.service
+    - pveproxy.service
+
+- name: Enable mon
+  ansible.builtin.command: pveceph mon create
+  changed_when: true
