@@ -10,8 +10,8 @@ iface enp87s0 inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-        address 192.168.8.{{ ip_suffix }}/24
-        gateway 192.168.8.1
+        address {{ net_primary['prefix'] }}.{{ ip_suffix }}/{{ net_primary['cidr'] }}
+        gateway {{ net_primary['prefix'] }}.1
         bridge-ports enp87s0
         bridge-stp off
         bridge-fd 0
@@ -21,7 +21,7 @@ iface enp89s0 inet manual
 
 auto internalbr
 iface internalbr inet static
-        address 192.168.4.{{ ip_suffix }}/24
+        address {{ net_internal['prefix'] }}.{{ ip_suffix }}/{{ net_internal['cidr'] }}
         bridge-ports enp89s0
         bridge-stp off
         bridge-fd 0
@@ -43,7 +43,7 @@ iface enp2s0f1np1
 
     auto cephbr
 iface cephbr inet static
-    address 172.16.0.{{ ip_suffix }}/24
+    address {{ net_ceph['prefix'] }}.{{ ip_suffix }}/{{ net_ceph['cidr'] }}
     ovs_type OVSBridge
     ovs_mtu 9000
     ovs_ports enp2s0f0np0 enp2s0f1np1

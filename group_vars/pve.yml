@@ -1,0 +1,9 @@
+net_ceph:
+  prefix: 172.16.0
+  cidr: 24
+net_internal:
+  prefix: 192.168.4
+  cidr: 24
+net_primary:
+  prefix: 192.168.8
+  cidr: 24

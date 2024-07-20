@@ -6,7 +6,3 @@
   loop:
     - pvedaemon.service
     - pveproxy.service
-
-- name: Enable mon
-  ansible.builtin.command: pveceph mon create
-  changed_when: true

@@ -14,7 +14,7 @@
   notify: Reload pvedaemon and pveproxy services
 
 - name: Initialize ceph
-  ansible.builtin.command: pveceph init -network 172.16.0.0/24
+  ansible.builtin.command: pveceph init -network {{ net_ceph['prefix'] }}.0/{{ net_ceph['cidr'] }}
   run_once: true
   args:
     creates: /etc/pve/ceph.conf
