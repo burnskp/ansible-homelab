@@ -19,22 +19,73 @@
   args:
     creates: /etc/pve/ceph.conf
 
-- name: Check if mon is already enabled
-  ansible.builtin.lineinfile:
-    path: /etc/pve/ceph.conf
-    line: "[mon.{{ ansible_hostname }}]"
-    state: present
-  check_mode: true
-  register: mon_enabled
-
-- name: Enable mon
+- name: Setup mon
   ansible.builtin.command: pveceph mon create
-  when: mon_enabled.changed
-  tags:
-    - skip_ansible_lint
-  changed_when: true
+  args:
+    creates: "/var/lib/ceph/mon/ceph-{{ ansible_hostname }}"
 
 - name: Setup mgr
   ansible.builtin.command: pveceph mgr create
   args:
     creates: "/var/lib/ceph/mgr/ceph-{{ ansible_hostname }}"
+
+- name: Setup mds
+  ansible.builtin.command: pveceph mds create
+  args:
+    creates: "/var/lib/ceph/mds/ceph-{{ ansible_hostname }}"
+
+- name: Create osd
+  ansible.builtin.command: pveceph osd create {{ osd_device }}
+  args:
+    creates: "/var/lib/ceph/osd/ceph-*"
+
+- name: Check if kubernetes pool exists
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      ceph osd pool stats | grep -q 'pool kubernetes'
+    executable: /bin/bash
+  register: pool_kubernetes
+  failed_when: pool_kubernetes.rc == 2
+  changed_when: false
+  run_once: true
+
+- name: Create kubernetes storage pool
+  ansible.builtin.command: pveceph pool create kubernetes --add_storages -pg_num 16
+  when: pool_kubernetes.rc != 0
+  run_once: true
+  changed_when: true
+
+- name: Check if pve pool exists
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      ceph osd pool stats | grep -q 'pool pve'
+    executable: /bin/bash
+  register: pool_pve
+  failed_when: pool_pve.rc == 2
+  changed_when: false
+  run_once: true
+
+- name: Create pve storage pool
+  ansible.builtin.command: pveceph pool create pve --add_storages -pg_num 16
+  when: pool_pve.rc == 1
+  run_once: true
+  changed_when: true
+
+- name: Check if iso fs exists
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      ceph fs status | grep -q 'iso_data'
+    executable: /bin/bash
+  register: fs_iso
+  failed_when: fs_iso.rc == 2
+  changed_when: false
+  run_once: true
+
+- name: Create ceph iso fs
+  ansible.builtin.command: pveceph fs create -add-storage -name iso -pg_num 16
+  when: fs_iso.rc == 1
+  run_once: true
+  changed_when: true

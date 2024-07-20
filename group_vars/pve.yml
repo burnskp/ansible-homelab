@@ -7,3 +7,5 @@ net_internal:
 net_primary:
   prefix: 192.168.8
   cidr: 24
+
+osd_device: /dev/disk/by-path/pci-0000:01:00.0-nvme-1
