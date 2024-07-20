@@ -18,9 +18,12 @@ This is my ansible setup to manage my homelab.
 
 - ansible_user: configures the ansible user so that ansible can be run in a
   more automated fashion
-- pve_updates: configures non-subscription PVE repos and enables
   unattended-upgrades
+- pve_ceph: Installs ceph and configures it with two pools, kubernetes and pve,
+  and a cephFS named iso
+- pve_cluster: creates a PVE cluster and joins all the nodes that run the role
 - pve_disable_nag: disables the nag pop up in the proxmox web-ui
+- pve_updates: configures non-subscription PVE repos and enables
 
 ## Playbooks
 
@@ -30,7 +33,13 @@ List and briefly describe the main playbooks in your project
 
 ## Variables
 
-n/a
+- net_ceph.prefix: prefix for the ceph network (ex: 10.0.0)
+- net_ceph.cidr: cidr for the ceph network (ex: 24)
+- net_internal.prefix: prefix for the internal network (ex: 10.0.0)
+- net_internal.cidr: cidr for the internal network (ex: 24)
+- net_primary.prefix: prefix for the primary network (ex: 10.0.0)
+- net_primary.cidr: cidr for the primary network (ex: 24)
+- osd_device: path to the block device used for the osd volume
 
 ## Tags
 
