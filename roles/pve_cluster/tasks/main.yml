@@ -1,0 +1,51 @@
+---
+- name: Get the last octet of the main interface's IP address
+  ansible.builtin.set_fact:
+    ip_suffix: "{{ ansible_default_ipv4.address | split('.') | last }}"
+
+- name: Create cluster
+  ansible.builtin.command: pvecm create cluster --link0 192.168.4.{{ ip_suffix }}
+  run_once: true
+  args:
+    creates: /etc/pve/corosync.conf
+
+- name: Get SSH key for server
+  ansible.builtin.command: ssh-keyscan -H "192.168.4.{{ hostvars[ansible_play_hosts[0]].ip_suffix }}"
+  register: ssh_keyscan
+  changed_when: false
+
+- name: Add SSH key to known_hosts
+  ansible.builtin.known_hosts:
+    path: /root/.ssh/known_hosts
+    name: "192.168.4.{{ hostvars[ansible_play_hosts[0]].ip_suffix }}"
+    key: "{{ ssh_keyscan.stdout }}"
+
+- name: Enable SSH forwarding for sudo
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    insertafter: '^#?\s*Defaults\s+env_keep\b'
+    line: 'Defaults    env_keep += "SSH_AUTH_SOCK"'
+
+- name: Get contents of node's root ssh public key
+  ansible.builtin.slurp:
+    src: /root/.ssh/id_rsa.pub
+  register: pub_key
+
+- name: Append authorized_keys
+  ansible.builtin.lineinfile:
+    path: /root/.ssh/authorized_keys
+    search_string: "{{ pub_key['content'] | b64decode }}"
+    line: "{{ pub_key['content'] | b64decode }}"
+  delegate_to: "{{ ansible_play_hosts[0] }}"
+
+- name: Check if /etc/pve/corosync.conf exists
+  ansible.builtin.stat:
+    path: /etc/pve/corosync.conf
+  register: corosync_file
+
+- name: Add nodes to cluster
+  ansible.builtin.shell: "eval $(ssh-agent); pvecm add 192.168.4.{{ hostvars[ansible_play_hosts[0]].ip_suffix }} -use_ssh --link0 192.168.4.{{ ip_suffix }}"
+  when: inventory_hostname != ansible_play_hosts[0]
+  args:
+    creates: /etc/pve/corosync.conf
+  throttle: 1

@@ -1,0 +1,6 @@
+---
+- name: Append authorized_keys
+  ansible.builtin.lineinfile:
+    path: /root/.ssh/authorized_keys
+    line: "{{ ssh_keys['content'] | b64decode }}"
+  delegate_to: "{{ ansible_play_hosts[0] }}"
