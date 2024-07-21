@@ -9,3 +9,4 @@
     - pve_network
     - pve_cluster
     - pve_ceph
+    - pve_dns01_route53

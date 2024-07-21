@@ -9,3 +9,8 @@ net_external:
   cidr: 24
 
 osd_device: /dev/disk/by-path/pci-0000:01:00.0-nvme-1
+
+acme:
+  email: kevin@burnskp.dev
+  domain: lab.burnskp.dev
+  aws_user: letsencrypt-dns01

@@ -1,0 +1,56 @@
+- name: Install python3-pexpect
+  ansible.builtin.package:
+    name: python3-pexpect
+    state: present
+  run_once: true
+
+- name: Check if ACME account exists
+  ansible.builtin.command: pvenode acme account info default
+  register: acme_account
+  failed_when: acme_account.rc == 2
+  changed_when: false
+  run_once: true
+
+- name: Register ACME account
+  ansible.builtin.expect:
+    command: pvenode acme account register default {{ acme.email }} -directory https://acme-v02.api.letsencrypt.org/directory
+    responses:
+      Do you agree to the above terms: "y"
+  when: acme_account.rc == 1
+  run_once: true
+
+- name: Check if ACME aws plugin exists
+  ansible.builtin.command: pvenode acme plugin config default
+  register: acme_plugin
+  failed_when: acme_plugin.rc == 2
+  changed_when: false
+  run_once: true
+
+- name: Configure AWS Plugin
+  ansible.builtin.shell:
+    cmd: |
+      echo "AWS_ACCESS_KEY_ID={{ lookup('community.general.onepassword', 'letsencrypt_dns01', field='username') }}" > /dev/shm/acme.aws
+      echo "AWS_SECRET_ACCESS_KEY={{ lookup('community.general.onepassword', 'letsencrypt_dns01') }}">> /dev/shm/acme.aws
+      pvenode acme plugin add dns default --api aws --data /dev/shm/acme.aws
+      rm /dev/shm/acme.aws
+  when: acme_plugin.rc != 0
+  changed_when: true
+  run_once: true
+
+- name: Check if ACME domain exists
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      pvenode config get -property acme | grep -q "{{ ansible_facts['hostname'] }}.{{ acme.domain }}"
+    executable: /bin/bash
+  register: acme_domain
+  failed_when: acme_domain.rc == 2
+  changed_when: false
+
+- name: Set ACME domain
+  ansible.builtin.shell:
+    cmd: |
+      pvenode config set -acmedomain0 {{ ansible_facts['hostname'] }}.{{ acme.domain }},plugin=default
+      pvenode acme cert order
+  when: acme_domain.rc == 1
+  changed_when: true
