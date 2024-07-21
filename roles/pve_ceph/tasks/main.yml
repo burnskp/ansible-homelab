@@ -77,7 +77,7 @@
   ansible.builtin.shell:
     cmd: |
       set -o pipefail
-      ceph fs status | grep -q 'iso_data'
+      ceph fs ls | grep -q 'iso_data'
     executable: /bin/bash
   register: fs_iso
   failed_when: fs_iso.rc == 2
