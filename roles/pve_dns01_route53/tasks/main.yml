@@ -41,7 +41,7 @@
   ansible.builtin.shell:
     cmd: |
       set -o pipefail
-      pvenode config get -property acme | grep -q "{{ ansible_facts['hostname'] }}.{{ acme.domain }}"
+      pvenode config get -property acmedomain0 | grep -q "{{ ansible_facts['hostname'] }}.{{ acme.domain }}"
     executable: /bin/bash
   register: acme_domain
   failed_when: acme_domain.rc == 2
